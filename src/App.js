@@ -1,25 +1,42 @@
-import logo from './logo.svg';
+import React from 'react';
+import { connect } from 'react-redux';
+import { useEffect } from 'react';
 import './App.css';
 
-function App() {
+import data from './data';
+import { getSpells } from './actions';
+
+import SearchBar from './components/searchBar';
+import SearchResults from './components/searchResults';
+
+function App(props) {
+  const { fetching, error, getSpells } = props;
+
+  useEffect(() => {
+    getSpells('');
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>DnD Spell Grabber</h1>
+      <SearchBar/>
+
+      {
+        (error !== '') && <h2>{error}</h2>
+      }
+
+      {
+        fetching ? <h3>Searching for spells...</h3> : <SearchResults/>
+      }
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    fetching: state.fetching,
+    error: state.error
+  }
+}
+
+export default connect(mapStateToProps, { getSpells })(App);
